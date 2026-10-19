@@ -17,4 +17,4 @@ Nmap done: 1 IP address (1 host up) scanned in 6.37 seconds
 ```
 
 Then I navigate to the target machine's IP address in a browser and I got to the main page:
-!(./screenshots/1.png)
+![](./screenshots/1.png)
