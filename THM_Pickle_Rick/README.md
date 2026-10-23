@@ -1,4 +1,4 @@
-Writeup for TryHackMe CTF Pickle Rick
+Write-up for TryHackMe CTF Pickle Rick
 
 # Recon
 The first step I scanned ports with nmap. As a result, two open ports were found.
