@@ -1,7 +1,9 @@
-This repository stores my writeups for my personal use.
+This repository contains my technical writeups used for self-education. The content is primarily in Russian.
 
-THM
+THM (lang=ru)
+- ![Surfer](./!_russian/THM_Surfer)
+- ![Stolen Mount](./!_russian/THM_Stolen_Mount)
+- ![Infinity Shell](./!_russian/THM_Infinity_Shell)
+
+THM (lang=en):
 - ![Pickle Rick](./THM_Pickle_Rick)
-- ![Surfer (russian)](./!_russian/THM_Surfer)
-- ![Stolen Mount (russian)](./!_russian/THM_Stolen_Mount)
-- ![Infinity Shell (russian)](./!_russian/THM_Infinity_Shell)
