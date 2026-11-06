@@ -1,4 +1,4 @@
-<img width="779" height="204" alt="изображение" src="https://github.com/user-attachments/assets/83d3c098-1c3f-4a2f-b7a8-8803bcf1305e" />Разбор прохождения комнаты Ninja Skills на платформе TryHackMe.
+Разбор прохождения комнаты Ninja Skills на платформе TryHackMe.
 
 Ответить на вопросы о файлах:
 - 8V2L
