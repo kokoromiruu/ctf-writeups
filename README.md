@@ -6,6 +6,7 @@ THM (`lang=ru`)
 - [Infinity Shell](./!_russian/THM_Infinity_Shell)
 - [DarkMatter](./!_russian/THM_DarkMatter)
 - [Ninja Skills](./!_russian/THM_Ninja_Skills)
+- [Dreaming](./!_russian/THM_Dreaming)
 
 THM (`lang=en`):
 - [Pickle Rick](./THM_Pickle_Rick)
